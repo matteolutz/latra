@@ -1,9 +1,12 @@
+use std::collections::HashMap;
+
 use strum::IntoEnumIterator;
 
+use crate::morpher::word::attributes::noun::NounAttributes;
+
 use super::word::{
-    attributes::{noun::NounAttributes, verb::VerbAttributes},
-    Word, WordAttributes, WordCase, WordGender, WordNumber, WordVerbConjugationPerson,
-    WordVerbConjugationTempus,
+    attributes::verb::VerbAttributes, Word, WordCase, WordGender, WordNumber,
+    WordVerbConjugationPerson, WordVerbConjugationTempus,
 };
 
 #[derive(Debug)]
@@ -79,10 +82,13 @@ impl WordLemma {
                             self.lemma,
                             declination.get_ending(case, number, *gender)
                         );
-                        words.push(Word::new(
-                            &word_str,
-                            WordAttributes::Noun(NounAttributes::new(case, number, *gender)),
-                        ));
+
+                        let new_word = Word::Noun {
+                            word: word_str,
+                            attributes: vec![NounAttributes::new(case, number, *gender)],
+                        };
+
+                        words.push(new_word);
                     }
                 }
             }
@@ -119,24 +125,29 @@ impl WordLemma {
                                 },
                             };
 
-                            words.push(Word::new(
-                                &word,
-                                WordAttributes::Verb(VerbAttributes::new(person, number, tempus)),
-                            ));
+                            words.push(Word::Verb {
+                                word,
+                                attributes: vec![VerbAttributes::new(person, number, tempus)],
+                            });
                         }
                     }
                 }
             }
         }
 
-        let mut actual_words: Vec<Word> = Vec::new();
+        let mut actual_words: HashMap<String, Word> = HashMap::new();
+
         for word in words {
-            let existing = actual_words.iter_mut().find(|w| w.word() == word.word());
-            if let Some(existing) = existing {
-                *existing = Word::com
+            if let Some(actual_word) = actual_words.get_mut(word.word()) {
+                if let Some(combine_word) = actual_word.combine(&word) {
+                    *actual_word = combine_word;
+                    continue;
+                }
             }
+
+            actual_words.insert(word.word().to_owned(), word);
         }
 
-        words
+        actual_words.values().cloned().collect()
     }
 }

@@ -3,8 +3,8 @@ use super::WordType;
 pub mod noun;
 pub mod verb;
 
-pub trait WordAttributesTrait<T> {
-    fn combine(others: &[T]) -> T;
-    fn try_merge_into(&mut self, other: &T) -> Option<()>;
-    fn word_type() -> WordType;
+pub trait WordAttributes: std::fmt::Display + std::fmt::Debug {
+    fn word_type(&self) -> WordType;
+    fn as_any(&self) -> &dyn std::any::Any;
+    fn eq_box(&self, other: &Box<dyn WordAttributes>) -> bool;
 }

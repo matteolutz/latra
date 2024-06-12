@@ -1,15 +1,15 @@
-use crate::morpher::word::WordAttributes;
+use crate::morpher::word::attributes::WordAttributes;
 
 #[derive(Debug)]
 pub enum ParserError {
-    ExpectedWord { attributes: WordAttributes },
+    ExpectedWord { attributes: Box<dyn WordAttributes> },
 }
 
 impl std::fmt::Display for ParserError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ParserError::ExpectedWord { attributes } => {
-                write!(f, "Expected word with attributes: {:?}", attributes)
+                write!(f, "Expected word with attributes: {}", attributes)
             }
         }
     }

@@ -28,6 +28,8 @@ impl<'a> Parser<'a> {
     pub fn parse_noun_phrase(&self) -> Result<(), ParserError> {
         let part = self.current_part();
 
+        if let SentencePart::Word { possible_words } = part {}
+
         Ok(())
     }
 

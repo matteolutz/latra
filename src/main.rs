@@ -35,7 +35,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let morpher = Morpher::new(&tokens, &all_words);
     let sentences = morpher.morph()?;
-    println!("{:?}", sentences);
+    for sentence in &sentences {
+        println!("{}", sentence);
+    }
 
     for sentence in &sentences {
         let mut parser = Parser::new(&sentence);
